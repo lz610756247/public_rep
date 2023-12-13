@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="referrer" content="no-referrer" />
+    <title></title>
+    <script src="https://gitee.com/gtx_197/for_all/raw/master/axios.min.js"></script>
+    <script type="text/javascript" src="http://47.94.91.67:10100/web-apps/apps/api/documents/api.js"></script>
+    <!-- <script type="text/javascript" src="http://192.168.2.100:10100/web-apps/apps/api/documents/api.js"></script> -->
+    <style>
+        body {
+            width: 100%;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #placeholder {
+            width: 100%;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="" onclick="callCommand()">callCommand</button>
+    <input id="input_text" class="ignore_mouse_evt dd ee ff" type="text" value="字段动态绑定" />
+    <div id="placeholder" class="nav" style="width: 100%; height: 100vh;"></div>
+
+</body>
+<script>
+    var insertText = '输入一段字符串';
+
+
+    function callCommand() {
+        connector.callCommand(function () {
+            var oDocument = Api.GetDocument();
+            var oRange = oDocument.GetRangeBySelect();
+            console.log(oRange.GetText());
+            oRange.AddText("点击了文档");
+        }, function () { console.log("callback command"); });
+    }
+
+    var onDocumentReady = function () {
+        console.log("文档准备好了");
+        window.connector = docEditor.createConnector();
+        connector.attachEvent("onChangeContentControl", function () {
+            console.log("event: onChangeContentControl");
+        });
+
+        Asc.scope.text = "Hello world!";
+
+        connector.callCommand(function () {
+
+            var oDocument = Api.GetDocument();
+            var oParagraph = Api.CreateParagraph();
+            oParagraph.AddText(Asc.scope.text);
+            oDocument.InsertContent([oParagraph]);
+
+        }, function () { console.log("callback command"); });
+    };
+
+    var config = {
+        "documentType": "word",
+        "historyList": {
+            "history": [],
+            "currentVersion": "1"
+        },
+        "document": {
+            "title": "【经营】通用合同模板.docx",
+            "url": "https://d2nlctn12v279m.cloudfront.net/assets/docs/samples/zh/demo.docx",
+            "permissions": {
+                "print": false,
+                "download": true
+            },
+            "attachId": "e932e7bb1e4d449aa9a7d8b403b4b517",
+            "fileType": "docx",
+            "key": "e932e7bb1e4d449aa9a7d8ss517"
+        },
+        "editorConfig": {
+            "customization": {
+                "autosave": false,
+                "compactToolbar": true,
+                "forcesave": true,
+                "toolbarNoTabs": true,
+                "help": false,
+                "compactHeader": true,
+                "hideRightMenu": true,
+            },
+            "mode": "edit",
+            "callbackUrl": "https://www.onlyoffice.com/post.ashx?type=editor-callback",
+            "lang": "zh-CN",
+            "user": {
+                "name": "曹瑞剑雄",
+                "id": "103"
+            }
+        }
+    };
+
+
+    var docEditor;
+    initDocEditor();
+
+
+    /**
+     * 初始化编辑器
+     */
+    function initDocEditor() {
+        // 初始化配置
+        config['events'] = {
+            onDocumentReady: onDocumentReady
+        };
+        // config.editorConfig.customization.autosave = false;
+        // config.editorConfig.customization.forcesave = true;
+        console.log(config.document.url);
+        docEditor = new DocsAPI.DocEditor("placeholder", config);
+    }
+
+
+</script>
+
+</html>
